@@ -1,0 +1,9 @@
+<launch>
+ <param name="long_in" value="9.2947495255" />
+ <param name="lat_in" value="45.6311926152" />
+ <param name="alt_in" value="231.506675163" />
+ <node pkg="lla2enu" name="car" type="sub_car" output="screen"/>
+ <node pkg="lla2enu" name="obs" type="sub_obs" output="screen"/>
+ <node pkg="rosbag" name="player" type="play" output="screen" args="-l -r 2 /home/cello/robotics/src/Project-20200418T132747Z-001/Project/project.bag"/>
+
+</launch>
