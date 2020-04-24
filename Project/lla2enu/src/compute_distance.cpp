@@ -8,7 +8,7 @@
 #include <message_filters/sync_policies/exact_time.h>
 
 
-
+using namespace message_filters;
 
 class computer{
 	private:
@@ -20,8 +20,8 @@ class computer{
 	message_filters::Subscriber<nav_msgs::Odometry> sub1(n, "/car/Odom", 1);
 	message_filters::Subscriber<nav_msgs::Odometry> sub2(n, "/obs/Odom", 1);
 	typedef message_filters::sync_policies::ApproximateTime<nav_msgs::Odometry, nav_msgs::Odometry> MySyncPolicy;
-	message_filters::Synchronizer<MySyncPolicy> sync(MySyncPolicy(10), sub1, sub2);
-	sync.registerCallback(boost::bind(&computer::SynchroCallback, _1, _2)); //register callback
+	static message_filters::Synchronizer<MySyncPolicy> sync(MySyncPolicy(10), sub1, sub2);
+	sync.registerCallback(boost::bind(&computer::SynchroCallback, this, _1, _2)); //register callback
 
 
 		}

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(lla2enu)
 
 ## Find catkin and any catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs geodesy sensor_msgs tf nav_msgs message_generation message_filters )
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs geodesy sensor_msgs tf nav_msgs message_generation message_filters)
 
 add_service_files(
   FILES
