@@ -24,17 +24,16 @@ public:
 	n.getParam("/long_in",long_in);
 	n.getParam("/lat_in",lat_in);	
 	n.getParam("/alt_in",alt_in);	
-	ROS_INFO("initial position: [%f,%f, %f]", long_in, lat_in,alt_in);
+	//ROS_INFO("initial position: [%f,%f, %f]", long_in, lat_in,alt_in);
 
 	sub = n.subscribe("/swiftnav/front/gps_pose", 1000, &converter::chatterCallback, this);
 	pub = n.advertise<nav_msgs::Odometry>("/car/Odom",1);
-	pub2 = n.advertise<nav_msgs::Odometry>("/car/OdomScaled",1);
 
 	}
 	
 
 void chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
-  ROS_INFO("Input position: [%f,%f, %f]", msg->latitude, msg->longitude,msg->altitude);
+ // ROS_INFO("Input position: [%f,%f, %f]", msg->latitude, msg->longitude,msg->altitude);
 
   // fixed values 
   // TODO: trasformare in funzione
@@ -71,7 +70,7 @@ void chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   float  y = (h + N) * cos_lambda * sin_phi;
   float  z = (h + (1 - e_sq) * N) * sin_lambda;
   
-  ROS_INFO("ECEF position: [%f,%f, %f]", x, y,z);
+ // ROS_INFO("ECEF position: [%f,%f, %f]", x, y,z);
   
 
   // ecef to enu
@@ -98,7 +97,7 @@ void chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
   float  yNorth = -cos_phi * sin_lambda * xd - sin_lambda * sin_phi * yd + cos_lambda * zd;
   float  zUp = cos_lambda * cos_phi * xd + cos_lambda * sin_phi * yd + sin_lambda * zd;
 
-  ROS_INFO("ENU position: [%f,%f, %f]", xEast, yNorth,zUp);
+ // ROS_INFO("ENU position: [%f,%f, %f]", xEast, yNorth,zUp);
   //preparazione messaggio di risposta sotto forma di Odom
   nav_msgs::Odometry messaggio;
   messaggio.header.frame_id="world";
@@ -124,7 +123,6 @@ void chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg){
 
 }
 void test(){
-		ROS_INFO("initial position: [%f,%f, %f]", long_in, lat_in,alt_in);
 
 }
 };
@@ -133,7 +131,7 @@ void test(){
 int main(int argc, char **argv){ //fatto
 
   	
-	ros::init(argc, argv, "listener");
+	ros::init(argc, argv, "car");
 	converter MyConverter;	
   	ros::spin();
 
