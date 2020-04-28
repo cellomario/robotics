@@ -49,6 +49,15 @@ class converter
 		float latitude = msg->latitude;
 		float longitude = msg->longitude;
 		float h = msg->altitude;
+        
+        if (latitude == 0 & longitude == 0 & h==0) 
+        { 
+            messaggio.twist.twist.linear.x = -1;
+        } 
+        else  
+        { 
+            messaggio.twist.twist.linear.x = 0;
+        } 
 
 		// fixed position [TODO: ricever come argomento]
 		float latitude_init = lat_in;
