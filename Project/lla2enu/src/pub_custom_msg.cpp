@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 		{
 			msg.dist = srv.response.dist;
 
-			if (srv.response.dist>5)
+			if (srv.response.dist > 5)
 			{
 				msg.flag.data = "Safe";
 			}
@@ -36,10 +36,14 @@ int main(int argc, char **argv)
 			{
 				msg.flag.data = "Crash";
 			}
-			else 
+			else if (srv.response.dist > 0)
 			{
 				msg.flag.data = "Unsafe";
 			} 
+			else
+			{
+				msg.flag.data = "Error";
+			}
 		
 		chatter_pub.publish (msg);
 		ROS_INFO("La distanza è: %f, lo stato è %s", (float)msg.dist, msg.flag);

@@ -10,7 +10,7 @@
 
 using namespace message_filters;
 float x1, x2, ycar, y2, z1, z2;
-bool ok;
+bool IsError;
 		
 void SynchroCallback(const nav_msgs::OdometryConstPtr& messaggio1, const nav_msgs::OdometryConstPtr& messaggio2) 
 { 
@@ -22,13 +22,24 @@ void SynchroCallback(const nav_msgs::OdometryConstPtr& messaggio1, const nav_msg
 	z1=messaggio1->pose.pose.position.z;
 	z2=messaggio2->pose.pose.position.z;
 	
-	ok = true;	
+	if(messaggio1->twist.twist.linear.x==-1)
+		{
+			IsError = true;
+		}
+		else
+		{
+			 IsError = false;
+		}
 }
 
 bool distance(lla2enu::ComputeDistance::Request &req,lla2enu::ComputeDistance::Response &res)// one for response (otuptu) under form of pointers
 {
 	float distanza=sqrt(pow((x1-x2),2)+pow((ycar-y2),2)+pow((z1-z2),2));
 	ROS_INFO("ho calcolato la distanza");
+	if(IsError)
+	{
+		distanza = -1;
+	}
 	res.dist=distanza;
 
 	return true;
@@ -36,7 +47,7 @@ bool distance(lla2enu::ComputeDistance::Request &req,lla2enu::ComputeDistance::R
 
 int main(int argc, char **argv) 
 {
-	ok = false;    
+
 	ros::init(argc, argv, "subscriber_sync");
 	ros::init(argc, argv, "compute_distance_client");
 
