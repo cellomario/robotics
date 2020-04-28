@@ -47,15 +47,7 @@ class converter
 		float longitude = msg->longitude;
 		float h = msg->altitude;
         
-        if (latitude == 0 & longitude == 0 & h==0) 
-        { 
-            messaggio.twist.twist.linear.x = -1;
-        } 
-        else  
-        { 
-            messaggio.twist.twist.linear.x = 0;
-        } 
-
+ 
 
 		// fixed position [TODO: ricever come argomento]
 		float latitude_init = lat_in;
@@ -118,7 +110,21 @@ class converter
 		messaggio.pose.pose.orientation.w=1;
 		// pubblichiamolo mo
 		pub.publish(messaggio);
+        
+        //Creazione messaggio di errore nel campo twist.twist.linear
+        if (latitude == 0 && longitude == 0 && h==0) 
+        { 
+            messaggio.twist.twist.linear.x = -1;
+        } 
+        else  
+        { 
+            messaggio.twist.twist.linear.x = 0;
+        } 
 
+        // pubblichiamolo 
+		pub.publish(messaggio);
+        
+        
 		// Pubblicazione risposte sotto forma di TF
 		tf::Transform transform;
 		transform.setOrigin( tf::Vector3(xEast, yNorth, zUp) );
