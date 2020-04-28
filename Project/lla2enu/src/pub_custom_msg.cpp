@@ -3,7 +3,26 @@
 #include "lla2enu/MyMessage.h" 
 #include "lla2enu/ComputeDistance.h" // include service
 
+#include <dynamic_reconfigure/server.h> //standard libraries for dynamic reconfiguration
+#include <lla2enu/parametriConfig.h>
+
 #include <sstream>
+
+float soglia_safe;
+float soglia_unsafe;
+
+void callback(lla2enu::parametriConfig &config, uint32_t level) { //how do we define our callback?
+	//two fields: one is config our python file (notice [pkgname]::[libraryname] ) containing all values
+	//that come from server and we accept
+	//second input field is integer level
+	
+	soglia_safe=config.soglia_safe;
+	soglia_unsafe=config.soglia_unsafe;
+}
+
+
+
+
 
 
 int main(int argc, char **argv)
@@ -18,6 +37,13 @@ int main(int argc, char **argv)
 	lla2enu::MyMessage msg;
 	ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance");
 
+	dynamic_reconfigure::Server<lla2enu::parametriConfig> server; //create reconfiguration server
+  //then, create recoinfiguration callback
+	dynamic_reconfigure::Server<lla2enu::parametriConfig>::CallbackType f;
+
+	f = boost::bind(&callback, _1, _2); //we bind it
+	server.setCallback(f); //we assign to server the callback we created ???
+
 	while(ros::ok())
 	{
 		//ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance");
@@ -28,11 +54,11 @@ int main(int argc, char **argv)
 		{
 			msg.dist = srv.response.dist;
 
-			if (srv.response.dist > 5)
+			if (srv.response.dist > soglia_safe)
 			{
 				msg.flag.data = "Safe";
 			}
-			else if (srv.response.dist < 1)
+			else if (srv.response.dist < soglia_unsafe)
 			{
 				msg.flag.data = "Crash";
 			}
