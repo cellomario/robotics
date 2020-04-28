@@ -12,10 +12,6 @@ float soglia_safe;
 float soglia_unsafe;
 
 void callback(lla2enu::parametriConfig &config, uint32_t level) { //how do we define our callback?
-	//two fields: one is config our python file (notice [pkgname]::[libraryname] ) containing all values
-	//that come from server and we accept
-	//second input field is integer level
-	
 	soglia_safe=config.soglia_safe;
 	soglia_unsafe=config.soglia_unsafe;
 }
@@ -72,7 +68,7 @@ int main(int argc, char **argv)
 			}
 		
 		chatter_pub.publish (msg);
-		ROS_INFO("La distanza è: %f, lo stato è %s", (float)msg.dist, msg.flag);
+		ROS_INFO("La distanza e': %f, lo stato e' %s", (float)msg.dist, msg.flag.data.c_str());
               
 		}
 		else

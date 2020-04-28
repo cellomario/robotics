@@ -9,7 +9,7 @@
 #include <message_filters/sync_policies/exact_time.h>
 
 using namespace message_filters;
-float x1, x2, ycar, y2, z1, z2;
+float x1, x2, ycar, y2, z1, z2, distanza;
 bool IsError;
 		
 void SynchroCallback(const nav_msgs::OdometryConstPtr& messaggio1, const nav_msgs::OdometryConstPtr& messaggio2) 
@@ -33,8 +33,9 @@ void SynchroCallback(const nav_msgs::OdometryConstPtr& messaggio1, const nav_msg
 }
 
 bool distance(lla2enu::ComputeDistance::Request &req,lla2enu::ComputeDistance::Response &res)// one for response (otuptu) under form of pointers
-{
-	float distanza=sqrt(pow((x1-x2),2)+pow((ycar-y2),2)+pow((z1-z2),2));
+{   
+    distanza = -1;
+    distanza=sqrt(pow((x1-x2),2)+pow((ycar-y2),2)+pow((z1-z2),2));
 	ROS_INFO("ho calcolato la distanza");
 	if(IsError)
 	{
