@@ -43,9 +43,7 @@ add_executable(compute_distance src/compute_distance.cpp)
 target_link_libraries(compute_distance ${catkin_LIBRARIES})
 add_dependencies(compute_distance ${catkin_EXPORTED_TARGETS})
 
-add_executable(client_dist src/client.cpp)
-target_link_libraries(client_dist ${catkin_LIBRARIES})
-add_dependencies(client_dist ${catkin_EXPORTED_TARGETS})
+
 
 add_executable(pub_custom_msg src/pub_custom_msg.cpp)
 add_dependencies(pub_custom_msg lla2enu_generate_messages_cpp)

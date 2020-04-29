@@ -8,12 +8,13 @@
 
 #include <sstream>
 
-float soglia_safe;
-float soglia_unsafe;
+double soglia_safe;
+double soglia_unsafe;
 
-void callback(lla2enu::parametriConfig &config, uint32_t level) { //how do we define our callback?
+void callback(lla2enu::parametriConfig &config, uint32_t level) { 
 	soglia_safe=config.soglia_safe;
 	soglia_unsafe=config.soglia_unsafe;
+	ROS_INFO("Ho alterato i parametri");
 }
 
 
@@ -44,6 +45,8 @@ int main(int argc, char **argv)
 	{
 		//ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance");
 		lla2enu::ComputeDistance srv;
+		
+
 
 		//ROS_INFO("Sto per chiamare il servizio");
 		if (client.call(srv)) // call the service
@@ -79,7 +82,9 @@ int main(int argc, char **argv)
 		{ 
 			ROS_INFO("Failed to call service compute_distance");
 		}  
+		ros::spinOnce();
 	}
-	
+
+	ros::spin();
 	return 0;
 }

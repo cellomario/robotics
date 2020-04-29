@@ -8,5 +8,5 @@
 
 	<node pkg="lla2enu" name="car" type="sub_car" output="screen"/>
 	<node pkg="lla2enu" name="obs" type="sub_obs" output="screen"/>
-	<node pkg="rosbag" name="player" type="play" output="screen" args="-l -r 10 /home/cello/robotics/src/Project-20200418T132747Z-001/Project/project.bag"/>
+	<node pkg="rosbag" name="player" type="play" output="screen" args="-l -r 1 -s 100 /home/cello/robotics/src/Project-20200418T132747Z-001/Project/project.bag"/>
 </launch>
