@@ -109,7 +109,7 @@ class converter
 		messaggio.pose.pose.orientation.z=0;
 		messaggio.pose.pose.orientation.w=1;
 		// pubblichiamolo mo
-		pub.publish(messaggio);
+		//pub.publish(messaggio);
         
         //Creazione messaggio di errore nel campo twist.twist.linear
         if (latitude == 0 && longitude == 0 && h==0) 

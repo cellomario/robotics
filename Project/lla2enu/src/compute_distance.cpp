@@ -13,7 +13,7 @@ bool IsError;
 		
 void SynchroCallback(const nav_msgs::OdometryConstPtr& messaggio1, const nav_msgs::OdometryConstPtr& messaggio2) 
 { 
-	ROS_INFO ("siamo nella callback\n");
+	//ROS_INFO ("siamo nella callback\n");
 	x1=messaggio1->pose.pose.position.x;
 	x2=messaggio2->pose.pose.position.x;
 	ycar=messaggio1->pose.pose.position.y;
@@ -46,7 +46,7 @@ bool distance(lla2enu::ComputeDistance::Request &req,lla2enu::ComputeDistance::R
         distanza=sqrt(pow((x1-x2),2)+pow((ycar-y2),2)+pow((z1-z2),2));
     }
    
- if(distanza == -1)
+ /*if(distanza == -1)
     {
         ROS_INFO("GPS error detection");   
     }
@@ -57,7 +57,7 @@ bool distance(lla2enu::ComputeDistance::Request &req,lla2enu::ComputeDistance::R
     else
     {
         ROS_INFO("distanza calcolata correttamente");
-    }
+    }*/
  
     res.dist=distanza;
 
@@ -81,7 +81,6 @@ int main(int argc, char **argv)
 	message_filters::Synchronizer<MySyncPolicy> sync(MySyncPolicy(10), sub1, sub2);
 	sync.registerCallback(boost::bind(&SynchroCallback, _1, _2));
 
-	ROS_INFO("cazzo sono %d %d",x1,x2);
   
 	// ros::init(argc, argv, "compute_distance_server");
   

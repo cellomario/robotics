@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
 	ros::Publisher chatter_pub = n.advertise<lla2enu::MyMessage>("chatter", 1000);
 
-	ros::Rate loop_rate(100);
+	ros::Rate loop_rate(10);
 	lla2enu::MyMessage msg;
 	ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance");
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 		//ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance");
 		lla2enu::ComputeDistance srv;
 
-		ROS_INFO("Sto per chiamare il servizio");
+		//ROS_INFO("Sto per chiamare il servizio");
 		if (client.call(srv)) // call the service
 		{
 			msg.dist = srv.response.dist;
@@ -54,17 +54,21 @@ int main(int argc, char **argv)
 			{
 				msg.flag.data = "Safe";
 			}
-			else if (srv.response.dist < soglia_unsafe)
+			else if (srv.response.dist > soglia_unsafe)
 			{
-				msg.flag.data = "Crash";
+				msg.flag.data = "Unsafe";
 			}
 			else if (srv.response.dist > 0)
 			{
-				msg.flag.data = "Unsafe";
+				msg.flag.data = "Crash";
 			} 
+			else if (srv.response.dist == -1.0)
+			{
+				msg.flag.data = "Gps Lost Satellite";
+			}
 			else
 			{
-				msg.flag.data = "Error";
+				msg.flag.data = "Insufficient Data";
 			}
 		
 		chatter_pub.publish (msg);
@@ -74,7 +78,7 @@ int main(int argc, char **argv)
 		else
 		{ 
 			ROS_INFO("Failed to call service compute_distance");
-		}
+		}  
 	}
 	
 	return 0;
