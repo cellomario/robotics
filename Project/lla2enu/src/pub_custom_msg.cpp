@@ -1,17 +1,20 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "lla2enu/MyMessage.h" 
-#include "lla2enu/ComputeDistance.h" // include service
-
-#include <dynamic_reconfigure/server.h> //standard libraries for dynamic reconfiguration
+#include "lla2enu/ComputeDistance.h" 
+#include <dynamic_reconfigure/server.h>
 #include <lla2enu/parametriConfig.h>
 
-#include <sstream>
+//This node subscribes to the service "compute_distance" and reads the provided distance, then publishes a custom message
+//containing the aforementioned distance and a string containing the current status (Safe/Unsafe/Crash) or, if an error occurs,
+//the error itself.
 
-double soglia_safe;
-double soglia_unsafe;
+
+double soglia_safe; //soglia tra safe e unsafe
+double soglia_unsafe; //soglia tra unsafe e crash
 
 void callback(lla2enu::parametriConfig &config, uint32_t level) { 
+	//leggo i parametri e li salvo nelle due variabili globali
 	soglia_safe=config.soglia_safe;
 	soglia_unsafe=config.soglia_unsafe;
 	ROS_INFO("Ho alterato i parametri");
@@ -24,36 +27,38 @@ void callback(lla2enu::parametriConfig &config, uint32_t level) {
 
 int main(int argc, char **argv)
 {
-	float dist;
-	ros::init(argc, argv, "talker");
+	ros::init(argc, argv, "custom_publisher");
 	ros::NodeHandle n;
-
-	ros::Publisher chatter_pub = n.advertise<lla2enu::MyMessage>("chatter", 1000);
-
+	
+	//create publisher for our custom message
+	ros::Publisher chatter_pub = n.advertise<lla2enu::MyMessage>("custom_msg", 1000); 
 	ros::Rate loop_rate(10);
-	lla2enu::MyMessage msg;
-	ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance");
+	
+	//create new custom message object
+	lla2enu::MyMessage msg; 
+	
+	//client to subscribe to service that computes distance
+	ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance"); 
 
-	dynamic_reconfigure::Server<lla2enu::parametriConfig> server; //create reconfiguration server
-  //then, create recoinfiguration callback
+	//create and configure reconfiguration server and relative callback
+	dynamic_reconfigure::Server<lla2enu::parametriConfig> server; 
 	dynamic_reconfigure::Server<lla2enu::parametriConfig>::CallbackType f;
-
-	f = boost::bind(&callback, _1, _2); //we bind it
-	server.setCallback(f); //we assign to server the callback we created ???
+	f = boost::bind(&callback, _1, _2);
+	server.setCallback(f); 
 
 	while(ros::ok())
-	{
-		//ros::ServiceClient client = n.serviceClient<lla2enu::ComputeDistance>("compute_distance");
-		lla2enu::ComputeDistance srv;
+	{	
+		//get distance from service
+		lla2enu::ComputeDistance srv; 
 		
-
-
-		//ROS_INFO("Sto per chiamare il servizio");
-		if (client.call(srv)) // call the service
-		{
-			msg.dist = srv.response.dist;
-
-			if (srv.response.dist > soglia_safe)
+		//call the service and read exit core
+		if (client.call(srv)) 
+		{	
+			//put distance into message object, ready for pubblication
+			msg.dist = srv.response.dist; 
+			
+			//"if" block to define the state of the system in the string of the custom message
+			if (srv.response.dist > soglia_safe) 
 			{
 				msg.flag.data = "Safe";
 			}
@@ -65,7 +70,7 @@ int main(int argc, char **argv)
 			{
 				msg.flag.data = "Crash";
 			} 
-			else if (srv.response.dist == -1.0)
+			else if (srv.response.dist == -1.0) //our custom error code to define 
 			{
 				msg.flag.data = "Gps Lost Satellite";
 			}
@@ -74,9 +79,11 @@ int main(int argc, char **argv)
 				msg.flag.data = "Insufficient Data";
 			}
 		
-		chatter_pub.publish (msg);
-		ROS_INFO("La distanza e': %f, lo stato e' %s", (float)msg.dist, msg.flag.data.c_str());
-              
+		//publish the message
+		chatter_pub.publish (msg); 
+		
+		//publish in console current distance and status
+		ROS_INFO("La distanza e': %f, lo stato e' %s", (float)msg.dist, msg.flag.data.c_str()); 
 		}
 		else
 		{ 
