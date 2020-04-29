@@ -2,7 +2,6 @@
 #include "lla2enu/ComputeDistance.h" //include [package]/[servicename].h
 #include "nav_msgs/Odometry.h"
 #include <math.h>  
-#include "lla2enu/ComputeDistance.h" //include [package]/[servicename].h
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -22,7 +21,7 @@ void SynchroCallback(const nav_msgs::OdometryConstPtr& messaggio1, const nav_msg
 	z1=messaggio1->pose.pose.position.z;
 	z2=messaggio2->pose.pose.position.z;
 	
-	if(messaggio1->twist.twist.linear.x==-1)
+	if(messaggio1->twist.twist.linear.x==-1 || messaggio2->twist.twist.linear.x==-1)
 		{
 			IsError = true;
 		}
@@ -34,14 +33,33 @@ void SynchroCallback(const nav_msgs::OdometryConstPtr& messaggio1, const nav_msg
 
 bool distance(lla2enu::ComputeDistance::Request &req,lla2enu::ComputeDistance::Response &res)// one for response (otuptu) under form of pointers
 {   
-    distanza = -1;
-    distanza=sqrt(pow((x1-x2),2)+pow((ycar-y2),2)+pow((z1-z2),2));
-	ROS_INFO("ho calcolato la distanza");
-	if(IsError)
-	{
-		distanza = -1;
-	}
-	res.dist=distanza;
+   if(IsError)
+    {
+        distanza = -1;
+    }
+    else if(x1==0 && x2==0 && ycar==0 && y2==0 && z1==0 && z2==0)
+    {
+        distanza = -2;
+    }
+    else
+    {
+        distanza=sqrt(pow((x1-x2),2)+pow((ycar-y2),2)+pow((z1-z2),2));
+    }
+   
+ if(distanza == -1)
+    {
+        ROS_INFO("GPS error detection");   
+    }
+    else if(distanza == -2)
+    {
+        ROS_INFO("errore 2");
+    }
+    else
+    {
+        ROS_INFO("distanza calcolata correttamente");
+    }
+ 
+    res.dist=distanza;
 
 	return true;
 }
